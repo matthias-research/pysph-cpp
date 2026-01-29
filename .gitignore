@@ -1,0 +1,27 @@
+# ImGui settings (user-specific)
+imgui.ini
+
+# Build outputs
+bin/
+obj/
+x64/
+Debug/
+Release/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.ncb
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# CUDA
+*.cubin
+*.ptx
+*.fatbin
+
+# Dependencies (use vcpkg)
+packages/
