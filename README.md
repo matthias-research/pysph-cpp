@@ -1,6 +1,6 @@
 # PySPH C++ Port
 
-A C++ port of the Python [pysph](https://github.com/...) screen-space fluid rendering demo.
+A C++ port of the Python [pysph](https://github.com/benma/pysph?hl=de-CH) screen-space fluid rendering demo.
 
 ## Features
 
