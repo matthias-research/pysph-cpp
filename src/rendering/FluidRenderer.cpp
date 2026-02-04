@@ -238,7 +238,15 @@ vec3 computeNormal(vec2 uv) {
     vec3 dx = vec3(Cx * z + Wx * z_x, Wy * z_x, z_x);
     vec3 dy = vec3(Wx * z_y, Cy * z + Wy * z_y, z_y);
     
-    vec3 normal = normalize(cross(dx, dy));
+    vec3 normal = cross(dx, dy);
+    float len = length(normal);
+    
+    // When viewing flat surface head-on, dx and dy become nearly parallel,
+    // making the cross product unstable. Fall back to view-facing normal.
+    if (len < 1e-6) {
+        return vec3(0.0, 0.0, 1.0);  // Default: facing camera
+    }
+    normal = normal / len;
     
     // Transform to world space
     mat3 invModelView = transpose(mat3(modelView));

@@ -61,6 +61,13 @@ __device__ inline float computeMeanCurvature(cudaSurfaceObject_t surf, int x, in
     
     float D = Cy * Cy * z_x * z_x + Cx * Cx * z_y * z_y + Cx * Cx * Cy * Cy * z * z;
     
+    // Prevent division by zero when viewing flat surfaces head-on
+    // D becomes very small when depth derivatives are near zero
+    const float D_MIN = 1e-12f;
+    if (D < D_MIN) {
+        return 0.0f;  // No curvature correction for near-flat surfaces facing camera
+    }
+    
     float z_xx = diffZ_2(surf, x, y, 1, 0, width, height);
     float z_yy = diffZ_2(surf, x, y, 0, 1, width, height);
     float z_xy = diffZ_xy(surf, x, y, width, height);
@@ -71,8 +78,12 @@ __device__ inline float computeMeanCurvature(cudaSurfaceObject_t surf, int x, in
     float Ex = 0.5f * z_x * D_x - z_xx * D;
     float Ey = 0.5f * z_y * D_y - z_yy * D;
     
-    float H = (Cy * Ex + Cx * Ey) / (2.0f * D * sqrtf(D));
-    return H;
+    float sqrtD = sqrtf(D);
+    float H = (Cy * Ex + Cx * Ey) / (2.0f * D * sqrtD);
+    
+    // Clamp curvature to prevent extreme corrections that cause flickering
+    const float MAX_CURVATURE = 1.0f;
+    return fmaxf(-MAX_CURVATURE, fminf(MAX_CURVATURE, H));
 }
 
 //-----------------------------------------------------------------------------
